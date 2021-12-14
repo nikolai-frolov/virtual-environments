@@ -8,25 +8,26 @@ Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
 
 Write-Host "Clean up various directories"
 @(
-    "C:\\Recovery",
-    "$env:windir\\logs",
-    "$env:windir\\winsxs\\manifestcache",
-    "$env:windir\\Temp",
+    "$env:SystemDrive\Recovery",
+    "$env:SystemRoot\logs",
+    "$env:SystemRoot\winsxs\manifestcache",
+    "$env:SystemRoot\Temp",
     "$env:TEMP"
 ) | ForEach-Object {
     if (Test-Path $_) {
         Write-Host "Removing $_"
         try {
-            Takeown /d Y /R /f $_ | Out-Null
-            Icacls $_ /GRANT:r administrators:F /T /c /q  2>&1 | Out-Null
-            Remove-Item $_ -Recurse -Force | Out-Null
+            takeown /d Y /R /f $_ | Out-Null
+            icacls $_ /GRANT:r administrators:F /t /c /q | Out-Null
+            Remove-Item $_ -Recurse -Force -ErrorAction Ignore
+        } catch { 
+            $error.clear()
         }
-        catch { $global:error.RemoveAt(0) }
     }
 }
 
-$winInstallDir = "$env:windir\\Installer"
-New-Item -Path $winInstallDir -ItemType Directory -Force
+$winInstallDir = "$env:windir\Installer"
+New-Item -Path $winInstallDir -ItemType Directory -Force | Out-Null
 
 # Remove AllUsersAllHosts profile
 Remove-Item $profile.AllUsersAllHosts -Force
@@ -37,4 +38,8 @@ npm cache clean --force
 
 # allow msi to write to temp folder
 # see https://github.com/actions/virtual-environments/issues/1704
-icacls "C:\Windows\Temp" /q /c /t /grant Users:F /T
+try {
+    icacls "$env:SystemRoot\Temp" /q /c /t /grant Users:F | Out-Null
+} catch { 
+    $error.clear()
+}
