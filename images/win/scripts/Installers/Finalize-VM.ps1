@@ -18,7 +18,7 @@ Write-Host "Clean up various directories"
         Write-Host "Removing $_"
         try {
             takeown /d Y /R /f $_ | Out-Null
-            icacls $_ /GRANT:r administrators:F /t /c /q *> $null
+            cmd /c "icacls $_ /GRANT:r administrators:F /t /c /q 2>&1" | Out-Null
             Remove-Item $_ -Recurse -Force -ErrorAction Ignore
         } catch { 
             $error.clear()
@@ -39,7 +39,7 @@ npm cache clean --force
 # allow msi to write to temp folder
 # see https://github.com/actions/virtual-environments/issues/1704
 try {
-    icacls "$env:SystemRoot\Temp" /grant Users:F /t /c /q *> $null
+    cmd /c "icacls $env:SystemRoot\Temp /grant Users:F /t /c /q 2>&1" | Out-Null
 } catch { 
     $error.clear()
 }
