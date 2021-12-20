@@ -2,6 +2,7 @@
     "xcode": {
         "default": "13.1",
         "versions": [
+            { "link": "13.2.1", "version": "13.2.1" },
             { "link": "13.2", "version": "13.2.0" },
             { "link": "13.1", "version": "13.1.0" }
         ]
@@ -9,7 +10,7 @@
     "xamarin": {
         "vsmac": "latest",
         "mono-versions": [
-            "6.12.0.140"
+            "6.12.0.162"
         ],
         "ios-versions": [
             "15.2.0.17", "15.0.0.6"
@@ -98,7 +99,8 @@
             "subversion",
             "swig",
             "zstd",
-            "gmp"
+            "gmp",
+            "zlib"
         ],
         "cask_packages": [
             "julia"
