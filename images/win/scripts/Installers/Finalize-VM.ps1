@@ -16,13 +16,9 @@ Write-Host "Clean up various directories"
 ) | ForEach-Object {
     if (Test-Path $_) {
         Write-Host "Removing $_"
-        try {
-            takeown /d Y /R /f $_ | Out-Null
-            cmd /c "icacls $_ /GRANT:r administrators:F /t /c /q *> nul" | Out-Null
-            Remove-Item $_ -Recurse -Force -ErrorAction Ignore
-        } catch { 
-            $error.clear()
-        }
+        cmd /c "takeown /d Y /R /f $_ 2>&1" | Out-Null
+        cmd /c "icacls $_ /grant:r administrators:f /t /c /q 2>&1" | Out-Null
+        Remove-Item $_ -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
     }
 }
 
@@ -30,16 +26,14 @@ $winInstallDir = "$env:SystemRoot\Installer"
 New-Item -Path $winInstallDir -ItemType Directory -Force | Out-Null
 
 # Remove AllUsersAllHosts profile
-Remove-Item $profile.AllUsersAllHosts -Force
+Remove-Item $profile.AllUsersAllHosts -Force -ErrorAction SilentlyContinue | Out-Null
 
 # Clean yarn and npm cache
-yarn cache clean
-npm cache clean --force
+cmd /c "yarn cache clean 2>&1" | Out-Null
+cmd /c "npm cache clean --force 2>&1" | Out-Null
 
 # allow msi to write to temp folder
 # see https://github.com/actions/virtual-environments/issues/1704
-try {
-    cmd /c "icacls $env:SystemRoot\Temp /grant Users:F /t /c /q *> nul" | Out-Null
-} catch { 
-    $error.clear()
-}
+cmd /c "icacls $env:SystemRoot\Temp /grant Users:f /t /c /q 2>&1" | Out-Null
+
+Write-Host "Finalize-VM.ps1 - completed"
