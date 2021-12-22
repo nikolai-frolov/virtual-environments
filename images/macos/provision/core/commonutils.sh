@@ -17,7 +17,7 @@ for package in $cask_packages; do
 done
 
 # Install packages which should be removed after security preferences update 
-brew install macfuse
+brew install --cask macfuse
 
 # Execute AppleScript to change security preferences
 # System Preferences -> Security & Privacy -> General -> Unlock -> Allow -> Not now
